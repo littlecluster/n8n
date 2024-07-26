@@ -6,8 +6,10 @@ import { sentryVitePlugin } from '@sentry/vite-plugin';
 import packageJSON from './package.json';
 import { vitestConfig } from '../design-system/vite.config.mts';
 import icons from 'unplugin-icons/vite';
-import iconsResolver from 'unplugin-icons/resolver'
-import components from 'unplugin-vue-components/vite';
+
+import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfill';
+import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 const vendorChunks = ['vue', 'vue-router'];
 const n8nChunks = ['n8n-workflow', 'n8n-design-system', '@n8n/chat'];
@@ -76,15 +78,10 @@ const plugins = [
 		compiler: 'vue3',
 		autoInstall: true,
 	}),
-	components({
-		dts: './src/components.d.ts',
-		resolvers: [
-			iconsResolver({
-				prefix: 'icon'
-			})
-		]
-	}),
 	vue(),
+	nodePolyfills({
+		exclude: ['fs']
+	})
 ];
 
 const { SENTRY_AUTH_TOKEN: authToken, RELEASE: release } = process.env;
@@ -113,7 +110,10 @@ export default mergeConfig(
 			BASE_PATH: `'${publicPath}'`,
 		},
 		plugins,
-		resolve: { alias },
+		resolve: {
+			alias,
+			mainFields: ['browser', 'module', 'main']
+		},
 		base: publicPath,
 		envPrefix: 'VUE_APP',
 		css: {
@@ -138,6 +138,17 @@ export default mergeConfig(
 				},
 			},
 		},
+		optimizeDeps: {
+            esbuildOptions: {
+                plugins: [
+                    NodeGlobalsPolyfillPlugin({
+                        buffer: true,
+                        process: true
+                    }),
+                    NodeModulesPolyfillPlugin()
+                ]
+            }
+        }
 	}),
 	vitestConfig,
 );
