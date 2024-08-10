@@ -7,12 +7,12 @@ pipeline {
     }
 
     environment {
-        REPO_URL = 'github.com/littlecluster/jenkins.git'
-        REPO_DIR = "${env.WORKSPACE}/docker/jenkins"
-        REPO = 'littlecluster/jenkins'
+        REPO_URL = 'github.com/littlecluster/n8n.git'
+        REPO_DIR = "${env.WORKSPACE}/docker/n8n"
+        REPO = 'littlecluster/n8n'
         PATH = "/usr/local/go/bin:${env.PATH}"
         DOCKER_REGISTRY = 'localhost:5000'
-        DOCKER_IMAGE_NAME = 'jenkins'
+        DOCKER_IMAGE_NAME = 'n8n'
         DOCKER_IMAGE_TAG = "latest"
         GITHUB_USERNAME = 'littlecluster'
         GITHUB_EMAIL = "littlecluster@domain.com"
