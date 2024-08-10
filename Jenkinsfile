@@ -7,30 +7,19 @@ pipeline {
     }
 
     environment {
-        REPO_URL = 'github.com/littlecluster/go-proxies.git'
-        REPO_DIR = "${env.WORKSPACE}/docker/go-proxies"
-        REPO = 'littlecluster/go-proxies'
+        REPO_URL = 'github.com/littlecluster/jenkins.git'
+        REPO_DIR = "${env.WORKSPACE}/docker/jenkins"
+        REPO = 'littlecluster/jenkins'
         PATH = "/usr/local/go/bin:${env.PATH}"
         DOCKER_REGISTRY = 'localhost:5000'
-        DOCKER_IMAGE_NAME = 'go-proxies'
+        DOCKER_IMAGE_NAME = 'jenkins'
         DOCKER_IMAGE_TAG = "latest"
         GITHUB_USERNAME = 'littlecluster'
         GITHUB_EMAIL = "littlecluster@domain.com"
     }
 
     stages {
-        stage('Prepare Environment') {
-            steps {
-                sh 'apk add --no-cache git curl wget gcc musl-dev'
-                sh '''
-                    wget -c https://go.dev/dl/go1.22.0.linux-amd64.tar.gz
-                    tar -C /usr/local -xzf go1.22.0.linux-amd64.tar.gz
-                    export PATH=/usr/local/go/bin:$PATH
-                    echo $PATH
-                    go version
-                '''
-            }
-        }
+
 
         stage('Checkout') {
             steps {
@@ -48,29 +37,6 @@ pipeline {
                             """
                         }
                     }
-                }
-            }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                dir(REPO_DIR) {
-                    sh '''
-                        export PATH=/usr/local/go/bin:$PATH
-                        go mod init ${REPO}
-                        go mod tidy
-                    '''
-                }
-            }
-        }
-
-        stage('Run Tests') {
-            steps {
-                dir(REPO_DIR) {
-                    sh '''
-                        export PATH=/usr/local/go/bin:$PATH
-                        go test ./...
-                    '''
                 }
             }
         }
@@ -121,7 +87,7 @@ pipeline {
         }
         success {
             script {
-                echo 'Tests passed...'
+                echo 'Build complete...'
             }
         }
         failure {
