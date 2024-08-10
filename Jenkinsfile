@@ -20,7 +20,18 @@ pipeline {
 
     stages {
 
+        stage('Setup Environment') {
+            steps {
+                sh '''
+                    apk update && apk add --no-cache git
+                '''
+                script {
+                    sh 'git --version'
 
+                    // Additional setup steps can be added here
+                }
+            }
+        }
         stage('Checkout') {
             steps {
                 script {
